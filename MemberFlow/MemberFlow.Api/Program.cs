@@ -1,6 +1,8 @@
 using MemberFlow.Application.Interfaces;
 using MemberFlow.Application.Services;
 using MemberFlow.Infrastructure.Persistence;
+using MemberFlow.Application.Interfaces.Security;
+using MemberFlow.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,7 @@ builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRefundService, RefundService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

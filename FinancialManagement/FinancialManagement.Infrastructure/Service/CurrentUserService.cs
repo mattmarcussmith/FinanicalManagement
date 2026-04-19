@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FinancialManagement.Application.Constants;
+﻿using FinancialManagement.Application.Constants;
 using FinancialManagement.Application.Dto.User;
 using FinancialManagement.Application.Interface;
 using Microsoft.AspNetCore.Http;
 
 namespace FinancialManagement.Infrastructure.Service
 {
-    public class CurrentUserService : ICurrentUserService
+    public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
     {
-        public required IHttpContextAccessor HttpContextAccessor;
+        public required IHttpContextAccessor HttpContextAccessor = httpContextAccessor;
 
         public async Task<GetCurrentUserResponseDto> GetCurrentUser()
         {
-            var user = HttpContextAccessor.HttpContext?.User;
+
+            var httpContext = HttpContextAccessor.HttpContext;
+            var user = httpContext?.User;
+
             var isAuthenticated = user?.Identity?.IsAuthenticated ?? false;
 
             if (!isAuthenticated)
@@ -32,18 +30,20 @@ namespace FinancialManagement.Infrastructure.Service
             }
 
             var name = user?.FindFirst(ClaimTypesConstants.Name)?.Value;
+            var preferredUsername = user?.FindFirst(ClaimTypesConstants.PreferredUsername)?.Value;
             var email = user?.FindFirst(ClaimTypesConstants.Email)?.Value;
             var role = user?.FindFirst(ClaimTypesConstants.Role)?.Value;
 
             var response = new GetCurrentUserResponseDto
             {
                 Name = name,
+                PreferredUsername = preferredUsername,
                 Email = email,
                 IdentityProviderId = objectId,
                 Role = role
             };
 
-            return await Task.FromResult(response);
+            return response;
         }
     }
 }
